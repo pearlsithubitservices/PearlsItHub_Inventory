@@ -35,7 +35,7 @@ const InfoRow = ({ label, value }) => (
   </div>
 );
 
-const BadgeRow = ({ label, value, active, color }) => (
+const BadgeRow = ({ label, value, active }) => (
   <div className="flex justify-between items-center py-2 border-b border-slate-100 last:border-b-0">
     <span className="text-[13px] text-slate-500 font-medium">{label}</span>
     <span
@@ -113,190 +113,116 @@ export default function ProductDetailView({
     }
   };
 
-  const stockStatus =
-    stock === 0 ? "Out of Stock" : stock <= 10 ? "Low Stock" : "In Stock";
-  const stockColor =
-    stock === 0
-      ? "text-red-500"
-      : stock <= 10
-        ? "text-amber-500"
-        : "text-emerald-600";
-  const stockBadge =
-    stock === 0
-      ? "bg-red-50 text-red-600 border border-red-200"
-      : stock <= 10
-        ? "bg-amber-50 text-amber-600 border border-amber-200"
-        : "bg-emerald-50 text-emerald-600 border border-emerald-200";
-
-  const categoryBadgeColor = {
-    Electronics: "background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe",
-    Furnitures: "background:#fffbeb;color:#d97706;border:1px solid #fde68a",
-    Accessories: "background:#faf5ff;color:#9333ea;border:1px solid #e9d5ff",
-    Hardwares: "background:#fef2f2;color:#dc2626;border:1px solid #fecaca",
-    Clothing: "background:#fdf2f8;color:#db2777;border:1px solid #fbcfe8",
-    Grocery: "background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0",
-    "Spare Parts": "background:#fff7ed;color:#ea580c;border:1px solid #fed7aa",
-  };
-
   const printProduct = () => {
-    const catStyle =
-      categoryBadgeColor[p.category] ||
-      "background:#f1f5f9;color:#475569;border:1px solid #e2e8f0";
-    const statusActive = p.status === "active";
     const html = `<!DOCTYPE html>
 <html><head><title>${p.name || "Product"}</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; padding:30px; color:#1e293b; background:#f8fafc; }
-  .header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; }
-  .header h1 { font-size:22px; font-weight:800; color:#0f172a; letter-spacing:-0.025em; }
-  .header .sku { font-size:13px; color:#64748b; font-weight:500; margin-top:4px; }
-  .grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-  .col-left { display:flex; flex-direction:column; gap:16px; }
-  .col-right { display:flex; flex-direction:column; gap:16px; }
-  .card { background:#fff; border:1px solid rgba(226,232,240,0.8); border-radius:12px; padding:20px; box-shadow:0 1px 4px rgba(10,37,64,0.04); }
-  .card h3 { font-size:15px; font-weight:800; color:#0f172a; letter-spacing:-0.025em; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
-  .card h3 .icon { color:#1e5fa5; font-size:14px; }
-  .row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #f1f5f9; }
+  body { font-family:'Inter',-apple-system,sans-serif; padding:20px; color:#1e293b; background:#f8fafc; }
+  h1 { font-size:20px; font-weight:800; color:#0f172a; margin-bottom:4px; }
+  .sku { font-size:12px; color:#64748b; margin-bottom:16px; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .card { background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:16px; }
+  .card h3 { font-size:14px; font-weight:700; color:#0f172a; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid #f1f5f9; }
+  .row { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #f8fafc; }
   .row:last-child { border-bottom:none; }
-  .label { font-size:13px; color:#64748b; font-weight:500; }
-  .value { font-size:13px; font-weight:700; color:#0f172a; text-align:right; }
-  .badge { display:inline-flex; align-items:center; padding:2px 10px; border-radius:9999px; font-size:11px; font-weight:700; }
+  .label { font-size:12px; color:#64748b; }
+  .value { font-size:12px; font-weight:600; color:#0f172a; }
+  .badge { display:inline-flex; padding:2px 8px; border-radius:9999px; font-size:10px; font-weight:600; }
   .badge-green { background:#ecfdf5; color:#059669; border:1px solid #a7f3d0; }
-  .badge-red { background:#fef2f2; color:#dc2626; border:1px solid #fecaca; }
   .badge-slate { background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; }
-  .cat-badge { display:inline-flex; padding:2px 10px; border-radius:9999px; font-size:11px; font-weight:700; }
-  .img-box { background:linear-gradient(135deg,#f8fafc,#f1f5f9); border-radius:12px; display:flex; align-items:center; justify-content:center; min-height:280px; border:1px solid rgba(226,232,240,0.8); }
-  .img-box .placeholder { text-align:center; color:#94a3b8; }
-  .img-box .placeholder svg { width:80px; height:80px; margin:0 auto 12px; }
-  .img-box .placeholder p { font-size:13px; font-weight:600; }
-  .thumbnails { display:flex; gap:8px; }
-  .thumb { width:64px; height:64px; border-radius:8px; background:#f1f5f9; border:1px solid #e2e8f0; display:flex; align-items:center; justify-content:center; color:#cbd5e1; }
-  .stock-val { font-weight:700; }
-  .stock-red { color:#ef4444; }
-  .stock-amber { color:#f59e0b; }
-  .stock-green { color:#059669; }
-  .desc { padding-top:8px; }
-  .desc .desc-label { font-size:13px; color:#64748b; font-weight:500; margin-bottom:4px; }
-  .desc .desc-text { font-size:13px; color:#334155; font-weight:500; line-height:1.6; }
-  @media print {
-    body { padding:16px; background:#fff; }
-    .card { box-shadow:none; }
-  }
+  .status-row { display:flex; gap:24px; padding:12px 0; }
+  .status-item { display:flex; align-items:center; gap:8px; }
+  .status-label { font-size:12px; color:#64748b; }
+  @media print { body { padding:10px; background:#fff; } .card { box-shadow:none; } }
 </style></head><body>
-<div class="header">
-  <div>
-    <h1>${p.name || "Product"}</h1>
-    <p class="sku">SKU: ${p.sku || p.barcode || "-"}</p>
-  </div>
-</div>
+<h1>${p.name || "Product"}</h1>
+<p class="sku">SKU: ${p.sku || p.barcode || "-"}</p>
 <div class="grid">
-  <div class="col-left">
-    <div class="card">
-      <div class="img-box">
-        ${
-          p.imageUrl
-            ? `<img src="${p.imageUrl}" alt="${p.name}" style="max-width:100%;max-height:300px;object-fit:contain;padding:16px;">`
-            : `<div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4M4 7l8 4M4 7v10l8 4m0-10v10"/></svg><p>Product Image</p></div>`
-        }
-      </div>
-    </div>
-    <div class="thumbnails">
-      ${
-        p.galleryImages && p.galleryImages.length > 0
-          ? p.galleryImages
-              .map(
-                (img) =>
-                  `<div class="thumb"><img src="${img.url}" alt="gallery" style="width:100%;height:100%;object-fit:cover;border-radius:8px;"></div>`,
-              )
-              .join("")
-          : `<div class="thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4M4 7l8 4M4 7v10l8 4m0-10v10"/></svg></div>
-          <div class="thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4M4 7l8 4M4 7v10l8 4m0-10v10"/></svg></div>
-          <div class="thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4M4 7l8 4M4 7v10l8 4m0-10v10"/></svg></div>
-          <div class="thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4M4 7l8 4M4 7v10l8 4m0-10v10"/></svg></div>`
-      }
-    </div>
-  </div>
-  <div class="col-right">
-    <div class="card">
-      <h3><span class="icon">&#9632;</span> Product Information</h3>
+  <div>
+    <div class="card"><h3>Product Information</h3>
       <div class="row"><span class="label">Product Name</span><span class="value">${p.name || "-"}</span></div>
-      <div class="row"><span class="label">SKU / Code</span><span class="value">${p.sku || p.barcode || "-"}</span></div>
+      <div class="row"><span class="label">SKU / Code</span><span class="value">${p.sku || "-"}</span></div>
       <div class="row"><span class="label">Barcode</span><span class="value">${p.barcode || "-"}</span></div>
       <div class="row"><span class="label">HSN / SAC Code</span><span class="value">${p.hsnSacCode || "-"}</span></div>
-      ${p.description ? `<div class="desc"><p class="desc-label">Description</p><p class="desc-text">${p.description}</p></div>` : ""}
     </div>
-    <div class="card">
-      <h3><span class="icon">&#9632;</span> Classification</h3>
-      <div class="row"><span class="label">Category</span><span class="value"><span class="cat-badge" style="${catStyle}">${p.category || "-"}</span></span></div>
-      <div class="row"><span class="label">Sub Category</span><span class="value">${p.subCategory || "-"}</span></div>
+    <div class="card" style="margin-top:16px"><h3>Classification</h3>
+      <div class="row"><span class="label">Category</span><span class="value">${p.category || "-"}</span></div>
+      <div class="row"><span class="label">Subcategory</span><span class="value">${p.subCategory || "-"}</span></div>
       <div class="row"><span class="label">Brand</span><span class="value">${p.brand || "-"}</span></div>
-      <div class="row"><span class="label">Tag</span><span class="value">${p.tagForProduct || "-"}</span></div>
+      <div class="row"><span class="label">Unit of Measurement</span><span class="value">${p.unit || "-"}</span></div>
+      <div class="row"><span class="label">Tax Rate(%)</span><span class="value">${p.taxRate ? p.taxRate + "%" : "-"}</span></div>
+      <div class="row"><span class="label">Country of Origin</span><span class="value">${p.country || p.countryOfOrigin || "-"}</span></div>
     </div>
-    <div class="card">
-      <h3><span class="icon">&#9632;</span> Pricing Information</h3>
-      <div class="row"><span class="label">Selling Price</span><span class="value">&#8377;${(p.sellingPrice || p.price || 0).toLocaleString()}.00</span></div>
-      <div class="row"><span class="label">M.R.P</span><span class="value">&#8377;${(p.mrp || 0).toLocaleString()}.00</span></div>
-      <div class="row"><span class="label">Purchase Price</span><span class="value">&#8377;${(p.purchasePrice || p.cost || 0).toLocaleString()}.00</span></div>
-      <div class="row"><span class="label">Tax Rate</span><span class="value">${p.taxRate ? p.taxRate + "%" : "-"}</span></div>
-      <div class="row"><span class="label">Discount</span><span class="value">${p.discount ? p.discount + "%" : "-"}</span></div>
-      <div class="row"><span class="label">Unit</span><span class="value">${p.unit || "-"}</span></div>
+  </div>
+  <div>
+    <div class="card"><h3>Pricing Information</h3>
+      <div class="row"><span class="label">Cost Price (Rs)</span><span class="value">${(p.purchasePrice || p.cost || 0).toLocaleString()}.00</span></div>
+      <div class="row"><span class="label">Selling Price (Rs)</span><span class="value">${(p.sellingPrice || p.price || 0).toLocaleString()}.00</span></div>
+      <div class="row"><span class="label">M.R.P (Rs)</span><span class="value">${(p.mrp || 0).toLocaleString()}.00</span></div>
+      <div class="row"><span class="label">Tax Type</span><span class="value">${p.taxType || "-"}</span></div>
+      <div class="row"><span class="label">Discount Percentage (%)</span><span class="value">${p.discount ? p.discount + "%" : "-"}</span></div>
+      <div class="row"><span class="label">Discount Value (Rs)</span><span class="value">${p.discountValue ? p.discountValue.toLocaleString() : "-"}</span></div>
+      <div class="row"><span class="label">Minimum Selling Price (Rs)</span><span class="value">${p.minSellingPrice ? p.minSellingPrice.toLocaleString() : "-"}</span></div>
     </div>
-    <div class="card">
-      <h3><span class="icon">&#9632;</span> Inventory &amp; Warehouse Information</h3>
-      <div class="row"><span class="label">Current Stock</span><span class="value"><span class="stock-val ${stockColor}">${stock} ${p.unit || ""}</span></span></div>
-      <div class="row"><span class="label">Stock Status</span><span class="value"><span class="badge ${stockBadge}">${stockStatus}</span></span></div>
-      <div class="row"><span class="label">Reorder Level</span><span class="value">${p.reorderLevel || "-"}</span></div>
-      <div class="row"><span class="label">Warehouse Location</span><span class="value">${p.warehouseLocation || "-"}</span></div>
-      <div class="row"><span class="label">Bin Location</span><span class="value">${p.binLocation || "-"}</span></div>
-      <div class="row"><span class="label">Batch Number</span><span class="value">${p.batchNumber || "-"}</span></div>
-      <div class="row"><span class="label">Region</span><span class="value">${p.region || "-"}</span></div>
+  </div>
+</div>
+<div class="grid" style="margin-top:16px">
+  <div class="card"><h3>Inventory & Warehouse Information</h3>
+    <div class="row"><span class="label">In Stock Quantity</span><span class="value">${stock}</span></div>
+    <div class="row"><span class="label">Minimum Stock Level</span><span class="value">${p.minStockLevel || "-"}</span></div>
+    <div class="row"><span class="label">Maximum Stock Level</span><span class="value">${p.maxStockLevel || "-"}</span></div>
+    <div class="row"><span class="label">Reorder Level</span><span class="value">${p.reorderLevel || "-"}</span></div>
+    <div class="row"><span class="label">Reorder Quantity</span><span class="value">${p.reorderQuantity || "-"}</span></div>
+    <div class="row"><span class="label">Shelf Life (Days)</span><span class="value">${p.shelfLife || "-"}</span></div>
+    <div class="row"><span class="label">Warranty period</span><span class="value">${p.warrantyPeriod || "-"}</span></div>
+    <div class="row"><span class="label">Warehouse</span><span class="value">${p.warehouseLocation || "-"}</span></div>
+    <div class="row"><span class="label">Storage Location</span><span class="value">${p.storageLocation || "-"}</span></div>
+    <div class="row"><span class="label">Rack / Bin Location</span><span class="value">${p.binLocation || "-"}</span></div>
+    <div class="row"><span class="label">Bin Code</span><span class="value">${p.binCode || "-"}</span></div>
+  </div>
+  <div>
+    <div class="card"><h3>Supplier Information</h3>
+      <div class="row"><span class="label">Primary Supplier</span><span class="value">${p.supplierName || "-"}</span></div>
+      <div class="row"><span class="label">Supplier GSTN</span><span class="value">${p.supplierGstn || "-"}</span></div>
+      <div class="row"><span class="label">Lead Time</span><span class="value">${p.leadTime || "-"}</span></div>
+      <div class="row"><span class="label">Last Purchase Price (Rs)</span><span class="value">${p.lastPurchasePrice ? p.lastPurchasePrice.toLocaleString() : "-"}</span></div>
     </div>
-    <div class="card">
-      <h3><span class="icon">&#9632;</span> Supplier Information</h3>
-      <div class="row"><span class="label">Supplier Name</span><span class="value">${p.supplierName || "-"}</span></div>
-      <div class="row"><span class="label">Contact Number</span><span class="value">${p.supplierContactNumber || "-"}</span></div>
-      <div class="row"><span class="label">Invoice Number</span><span class="value">${p.invoiceNumber || "-"}</span></div>
-      <div class="row"><span class="label">Invoice Date</span><span class="value">${p.invoiceDate ? new Date(p.invoiceDate).toLocaleDateString() : "-"}</span></div>
-    </div>
-    <div class="card">
-      <h3><span class="icon">&#9632;</span> Product Specifications</h3>
+    <div class="card" style="margin-top:16px"><h3>Product Specifications</h3>
       <div class="row"><span class="label">Manufacturer</span><span class="value">${p.manufacturer || "-"}</span></div>
-      <div class="row"><span class="label">Model Name</span><span class="value">${p.modelName || "-"}</span></div>
-      <div class="row"><span class="label">Color</span><span class="value">${p.color || "-"}</span></div>
-      <div class="row"><span class="label">Material</span><span class="value">${p.material || "-"}</span></div>
-      <div class="row"><span class="label">Weight</span><span class="value">${p.weightInGm ? p.weightInGm + "g" : "-"}</span></div>
-      <div class="row"><span class="label">Country</span><span class="value">${p.country || p.countryOfOrigin || "-"}</span></div>
+      <div class="row"><span class="label">Model No</span><span class="value">${p.modelName || "-"}</span></div>
+      <div class="row"><span class="label">Serial Number</span><span class="value">${p.serialNumber || "-"}</span></div>
+      <div class="row"><span class="label">Size / Dimensions</span><span class="value">${p.dimensions || "-"}</span></div>
+      <div class="row"><span class="label">Weight</span><span class="value">${p.weightInGm ? p.weightInGm + " g" : "-"}</span></div>
     </div>
-    <div class="card">
-      <h3><span class="icon">&#9632;</span> Product Status</h3>
-      <div class="row"><span class="label">Status</span><span class="value"><span class="badge ${statusActive ? "badge-green" : "badge-red"}">${statusActive ? "Active" : "Inactive"}</span></span></div>
-      <div class="row"><span class="label">Publish on Store / POS</span><span class="value"><span class="badge ${p.publishOnStore ? "badge-green" : "badge-slate"}">${p.publishOnStore ? "Yes" : "No"}</span></span></div>
-      <div class="row"><span class="label">Allow Purchase</span><span class="value"><span class="badge ${p.allowPurchase ? "badge-green" : "badge-slate"}">${p.allowPurchase ? "Yes" : "No"}</span></span></div>
-      <div class="row"><span class="label">Allow Sales</span><span class="value"><span class="badge ${p.allowSales ? "badge-green" : "badge-slate"}">${p.allowSales ? "Yes" : "No"}</span></span></div>
-    </div>
+  </div>
+</div>
+<div class="card" style="margin-top:16px">
+  <h3>Product Status</h3>
+  <div class="status-row">
+    <div class="status-item"><span class="status-label">Allow Purchase</span> <span class="badge ${p.allowPurchase ? "badge-green" : "badge-slate"}">${p.allowPurchase ? "Yes" : "No"}</span></div>
+    <div class="status-item"><span class="status-label">Allow Sales</span> <span class="badge ${p.allowSales ? "badge-green" : "badge-slate"}">${p.allowSales ? "Yes" : "No"}</span></div>
+    <div class="status-item"><span class="status-label">Publish on Store / POS</span> <span class="badge ${p.publishOnStore ? "badge-green" : "badge-slate"}">${p.publishOnStore ? "Yes" : "No"}</span></div>
+    <div class="status-item"><span class="status-label">Status</span> <span class="badge ${p.status === "active" ? "badge-green" : "badge-slate"}">${p.status === "active" ? "Active" : "Inactive"}</span></div>
   </div>
 </div>
 </body></html>`;
     const printWindow = window.open("", "_blank");
     printWindow.document.write(html);
     printWindow.document.close();
-    setTimeout(() => {
-      printWindow.print();
-    }, 400);
+    setTimeout(() => { printWindow.print(); }, 400);
   };
 
   return (
     <div>
       {/* Header */}
-      {/* <div className="flex items-center justify-between mb-6"> */}
-      <div className="flex items-center justify-between bg-white border border-slate-200 rounded-lg px-3 py-2 shadow-sm mb-5">
+      <div className="flex items-center justify-between bg-white border border-slate-200 rounded-lg px-4 py-3 shadow-sm mb-5">
         <div>
-          <h1 className="text-[22px] font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-[20px] font-extrabold text-slate-900 tracking-tight">
             {p.name || "Product"}
           </h1>
-          <p className="text-[13px] text-blue-600 font-medium mt-0.5">
-            SKU: {p.sku || p.barcode || "-"}
+          <p className="text-[12px] text-slate-500 font-medium mt-0.5">
+            SKU : {p.sku || p.barcode || "-"}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -304,7 +230,7 @@ export default function ProductDetailView({
             onClick={printProduct}
             className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-600 text-[13px] font-semibold hover:bg-slate-50 transition-colors"
           >
-            <Printer size={15} /> Print
+            <Printer size={15} /> print
           </button>
           <button
             onClick={() => onEdit && onEdit(p)}
@@ -328,11 +254,12 @@ export default function ProductDetailView({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      {/* Top Section - Image + Product Info */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
         {/* Left Column - Image */}
         <div className="space-y-4">
           <div className="bg-white rounded-xl border border-slate-200/80 shadow-[0_1px_4px_rgba(10,37,64,0.04)] overflow-hidden">
-            <div className="aspect-square bg-gradient-to-br from-slate-100 to-slate-50 flex items-center justify-center">
+            <div className="aspect-[4/3] bg-gradient-to-br from-slate-100 to-slate-50 flex items-center justify-center">
               {p.imageUrl ? (
                 <img
                   src={p.imageUrl}
@@ -341,7 +268,7 @@ export default function ProductDetailView({
                 />
               ) : (
                 <div className="text-center">
-                  <Box size={80} className="text-slate-300 mx-auto mb-3" />
+                  <Box size={64} className="text-slate-300 mx-auto mb-2" />
                   <p className="text-[13px] text-slate-400 font-semibold">
                     Product Image
                   </p>
@@ -379,134 +306,135 @@ export default function ProductDetailView({
           )}
         </div>
 
-        {/* Right Column - Info */}
-        <div className="space-y-4">
-          <Section title="Product Information" icon={Box}>
-            <InfoRow label="Product Name" value={p.name} />
-            <InfoRow label="SKU / Code" value={p.sku || p.barcode} />
-            <InfoRow label="Barcode" value={p.barcode} />
-            <InfoRow label="HSN / SAC Code" value={p.hsnSacCode} />
-            {p.description && (
-              <div className="pt-2">
-                <p className="text-[13px] text-slate-500 font-medium mb-1">
-                  Description
-                </p>
-                <p className="text-[13px] text-slate-700 font-medium leading-relaxed">
-                  {p.description}
-                </p>
-              </div>
-            )}
-          </Section>
+        {/* Right Column - Product Info */}
+        <Section title="product information" icon={Box}>
+          <InfoRow label="Product name" value={p.name} />
+          <InfoRow label="SKU / Code" value={p.sku || p.barcode} />
+          <InfoRow label="Barcode" value={p.barcode} />
+          <InfoRow label="HSN / SAC Code" value={p.hsnSacCode} />
+          {p.description && (
+            <div className="pt-2">
+              <p className="text-[13px] text-slate-500 font-medium mb-1">
+                Description
+              </p>
+              <p className="text-[12px] text-slate-700 font-medium leading-relaxed">
+                {p.description}
+              </p>
+            </div>
+          )}
+        </Section>
+      </div>
 
-          <Section title="Classification" icon={Tag}>
-            <InfoRow
-              label="Category"
-              value={<CategoryBadge category={p.category} />}
-            />
-            <InfoRow label="Sub Category" value={p.subCategory} />
-            <InfoRow label="Brand" value={p.brand} />
-            <InfoRow label="Tag" value={p.tagForProduct} />
-          </Section>
+      {/* Middle Section - Classification + Pricing */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+        <Section title="Classification" icon={Tag}>
+          <InfoRow
+            label="Category"
+            value={<CategoryBadge category={p.category} />}
+          />
+          <InfoRow label="Subcategory" value={p.subCategory} />
+          <InfoRow label="Brand" value={p.brand} />
+          <InfoRow label="Unit of Measurement" value={p.unit} />
+          <InfoRow
+            label="Tax Rate(%)"
+            value={p.taxRate ? `${p.taxRate}%` : "-"}
+          />
+          <InfoRow
+            label="Country of Origin"
+            value={p.country || p.countryOfOrigin}
+          />
+        </Section>
 
-          <Section title="Pricing Information" icon={Tag}>
-            <InfoRow
-              label="Selling Price"
-              value={`₹${(p.sellingPrice || p.price || 0).toLocaleString()}.00`}
-            />
-            <InfoRow
-              label="M.R.P"
-              value={`₹${(p.mrp || 0).toLocaleString()}.00`}
-            />
-            <InfoRow
-              label="Purchase Price"
-              value={`₹${(p.purchasePrice || p.cost || 0).toLocaleString()}.00`}
-            />
-            <InfoRow
-              label="Tax Rate"
-              value={p.taxRate ? `${p.taxRate}%` : "-"}
-            />
-            <InfoRow
-              label="Discount"
-              value={p.discount ? `${p.discount}%` : "-"}
-            />
-            <InfoRow label="Unit" value={p.unit} />
-          </Section>
+        <Section title="Pricing Information" icon={Tag}>
+          <InfoRow
+            label="Cost Price (Rs)"
+            value={`₹${(p.purchasePrice || p.cost || 0).toLocaleString()}.00`}
+          />
+          <InfoRow
+            label="Selling Price (Rs)"
+            value={`₹${(p.sellingPrice || p.price || 0).toLocaleString()}.00`}
+          />
+          <InfoRow
+            label="M.R.P (Rs)"
+            value={`₹${(p.mrp || 0).toLocaleString()}.00`}
+          />
+          <InfoRow label="Tax Type" value={p.taxType} />
+          <InfoRow
+            label="Discount Percentage (%)"
+            value={p.discount ? `${p.discount}%` : "-"}
+          />
+          <InfoRow
+            label="Discount Value (Rs)"
+            value={p.discountValue ? `₹${p.discountValue.toLocaleString()}` : "-"}
+          />
+          <InfoRow
+            label="Minimum Selling Price (Rs)"
+            value={p.minSellingPrice ? `₹${p.minSellingPrice.toLocaleString()}` : "-"}
+          />
+        </Section>
+      </div>
 
-          <Section title="Inventory & Warehouse Information" icon={Warehouse}>
-            <InfoRow
-              label="Current Stock"
-              value={
-                <span className={stockColor}>
-                  {stock} {p.unit || ""}
-                </span>
-              }
-            />
-            <InfoRow
-              label="Stock Status"
-              value={
-                <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold ${stockBadge}`}
-                >
-                  {stockStatus}
-                </span>
-              }
-            />
-            <InfoRow label="Reorder Level" value={p.reorderLevel} />
-            <InfoRow label="Warehouse Location" value={p.warehouseLocation} />
-            <InfoRow label="Bin Location" value={p.binLocation} />
-            <InfoRow label="Batch Number" value={p.batchNumber} />
-            <InfoRow label="Region" value={p.region} />
-          </Section>
+      {/* Bottom Section - Inventory + Supplier + Specs */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+        <Section title="Inventory & Warehouse Information" icon={Warehouse}>
+          <InfoRow label="In Stock Quantity" value={stock} />
+          <InfoRow label="Minimum Stock Level" value={p.minStockLevel} />
+          <InfoRow label="Maximum Stock Level" value={p.maxStockLevel} />
+          <InfoRow label="Reorder Level" value={p.reorderLevel} />
+          <InfoRow label="Reorder Quantity" value={p.reorderQuantity} />
+          <InfoRow label="Shelf Life (Days)" value={p.shelfLife} />
+          <InfoRow label="Warranty period" value={p.warrantyPeriod} />
+          <InfoRow label="Warehouse" value={p.warehouseLocation} />
+          <InfoRow label="Storage Location" value={p.storageLocation} />
+          <InfoRow label="Rack / Bin Location" value={p.binLocation} />
+          <InfoRow label="Bin Code" value={p.binCode} />
+        </Section>
 
+        <div className="space-y-5">
           <Section title="Supplier Information" icon={FileText}>
-            <InfoRow label="Supplier Name" value={p.supplierName} />
-            <InfoRow label="Contact Number" value={p.supplierContactNumber} />
-            <InfoRow label="Invoice Number" value={p.invoiceNumber} />
+            <InfoRow label="Primary Supplier" value={p.supplierName} />
+            <InfoRow label="Supplier GSTN" value={p.supplierGstn} />
+            <InfoRow label="Lead Time" value={p.leadTime} />
             <InfoRow
-              label="Invoice Date"
-              value={
-                p.invoiceDate
-                  ? new Date(p.invoiceDate).toLocaleDateString()
-                  : "-"
-              }
+              label="Last Purchase Price (Rs)"
+              value={p.lastPurchasePrice ? `₹${p.lastPurchasePrice.toLocaleString()}` : "-"}
             />
           </Section>
 
           <Section title="Product Specifications" icon={Settings}>
             <InfoRow label="Manufacturer" value={p.manufacturer} />
-            <InfoRow label="Model Name" value={p.modelName} />
-            <InfoRow label="Color" value={p.color} />
-            <InfoRow label="Material" value={p.material} />
+            <InfoRow label="Model No" value={p.modelName} />
+            <InfoRow label="Serial Number" value={p.serialNumber} />
+            <InfoRow label="Size / Dimensions" value={p.dimensions} />
             <InfoRow
               label="Weight"
-              value={p.weightInGm ? `${p.weightInGm}g` : "-"}
-            />
-            <InfoRow label="Country" value={p.country || p.countryOfOrigin} />
-          </Section>
-
-          <Section title="Product Status" icon={Settings}>
-            <InfoRow
-              label="Status"
-              value={<StatusBadge active={p.status === "active"} />}
-            />
-            <BadgeRow
-              label="Publish on Store / POS"
-              value={p.publishOnStore}
-              active={p.publishOnStore}
-            />
-            <BadgeRow
-              label="Allow Purchase"
-              value={p.allowPurchase}
-              active={p.allowPurchase}
-            />
-            <BadgeRow
-              label="Allow Sales"
-              value={p.allowSales}
-              active={p.allowSales}
+              value={p.weightInGm ? `${p.weightInGm} g` : "-"}
             />
           </Section>
         </div>
       </div>
+
+      {/* Product Status - Full Width */}
+      <Section title="Product Status" icon={Settings}>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="flex items-center justify-between bg-slate-50 rounded-lg px-3 py-2">
+            <span className="text-[12px] text-slate-500 font-medium">Allow Purchase</span>
+            <BadgeRow label="" value={p.allowPurchase} active={p.allowPurchase} />
+          </div>
+          <div className="flex items-center justify-between bg-slate-50 rounded-lg px-3 py-2">
+            <span className="text-[12px] text-slate-500 font-medium">Allow Sales</span>
+            <BadgeRow label="" value={p.allowSales} active={p.allowSales} />
+          </div>
+          <div className="flex items-center justify-between bg-slate-50 rounded-lg px-3 py-2">
+            <span className="text-[12px] text-slate-500 font-medium">Publish on Store / POS</span>
+            <BadgeRow label="" value={p.publishOnStore} active={p.publishOnStore} />
+          </div>
+          <div className="flex items-center justify-between bg-slate-50 rounded-lg px-3 py-2">
+            <span className="text-[12px] text-slate-500 font-medium">Status</span>
+            <StatusBadge active={p.status === "active"} />
+          </div>
+        </div>
+      </Section>
 
       <ConfirmDialog
         open={showConfirm}
