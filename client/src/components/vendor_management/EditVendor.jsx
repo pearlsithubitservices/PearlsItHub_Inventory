@@ -8,7 +8,7 @@ export default function EditVendor({ vendor, onBack, onSave }) {
   const [form, setForm] = useState({
     name: vendor?.name || "",
     vendorCode: vendor?.vendorCode || "",
-    status: vendor?.status === "active" ? "Active" : "Inactive",
+    status: vendor?.status || "Active",
     contactPerson: vendor?.contactPerson || "",
     vendorEmail: vendor?.email || "",
     vendorPhone: vendor?.phone || "",
@@ -84,7 +84,7 @@ export default function EditVendor({ vendor, onBack, onSave }) {
         creditDays: form.creditDays,
         exchangeRate: form.exchangeRate,
         bankDetails: bankDetails,
-        status: form.status === "Active" ? "active" : "inactive",
+        status: form.status,
       };
 
       const res = await fetch(`${API_URL}/suppliers/${vendor._id}`, {

@@ -20,7 +20,7 @@ export default function Suppliers() {
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
-  const [form, setForm] = useState({ name: '', company: '', email: '', phone: '', address: '', city: '', country: '', contactPerson: '', notes: '', status: 'active' });
+  const [form, setForm] = useState({ name: '', company: '', email: '', phone: '', address: '', city: '', country: '', contactPerson: '', notes: '', status: 'Active' });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => { loadData(); }, []);
@@ -31,11 +31,11 @@ export default function Suppliers() {
       setSuppliers(res.data.suppliers || []);
     } catch (err) {
       setSuppliers([
-        { _id: '1', name: 'Tech Supply Co.', company: 'Tech Supply International', email: 'sales@techsupply.com', phone: '+1 800 123 4567', address: '100 Industrial Blvd', city: 'Seattle', country: 'USA', contactPerson: 'John Anderson', notes: 'Reliable tech components supplier. Ships within 2 days.', status: 'active', createdAt: new Date('2025-11-01') },
-        { _id: '2', name: 'Gadgets World', company: 'Gadgets World Ltd.', email: 'info@gadgetsworld.com', phone: '+1 800 234 5678', address: '200 Commerce Way', city: 'San Jose', country: 'USA', contactPerson: 'Sarah Chen', notes: 'Specializes in wearables and smart devices.', status: 'active', createdAt: new Date('2025-12-15') },
-        { _id: '3', name: 'Audio Masters', company: 'Audio Masters Pro', email: 'contact@audiomasters.com', phone: '+1 800 345 6789', address: '300 Sound St', city: 'Nashville', country: 'USA', contactPerson: 'Mike Johnson', notes: 'Premium audio equipment. Quality is excellent.', status: 'active', createdAt: new Date('2026-01-10') },
-        { _id: '4', name: 'Office Pro Supplies', company: 'Office Pro Inc.', email: 'orders@officepro.com', phone: '+1 800 456 7890', address: '400 Business Ave', city: 'Atlanta', country: 'USA', contactPerson: 'Lisa Martinez', notes: 'Office equipment and ergonomic products.', status: 'inactive', createdAt: new Date('2025-09-20') },
-        { _id: '5', name: 'Global Components', company: 'Global Tech Components', email: 'support@globalcomp.com', phone: '+1 800 567 8901', address: '500 Tech Park', city: 'Austin', country: 'USA', contactPerson: 'David Kim', notes: '', status: 'active', createdAt: new Date('2026-02-28') },
+        { _id: '1', name: 'Tech Supply Co.', company: 'Tech Supply International', email: 'sales@techsupply.com', phone: '+1 800 123 4567', address: '100 Industrial Blvd', city: 'Seattle', country: 'USA', contactPerson: 'John Anderson', notes: 'Reliable tech components supplier. Ships within 2 days.', status: 'Active', createdAt: new Date('2025-11-01') },
+        { _id: '2', name: 'Gadgets World', company: 'Gadgets World Ltd.', email: 'info@gadgetsworld.com', phone: '+1 800 234 5678', address: '200 Commerce Way', city: 'San Jose', country: 'USA', contactPerson: 'Sarah Chen', notes: 'Specializes in wearables and smart devices.', status: 'Active', createdAt: new Date('2025-12-15') },
+        { _id: '3', name: 'Audio Masters', company: 'Audio Masters Pro', email: 'contact@audiomasters.com', phone: '+1 800 345 6789', address: '300 Sound St', city: 'Nashville', country: 'USA', contactPerson: 'Mike Johnson', notes: 'Premium audio equipment. Quality is excellent.', status: 'Active', createdAt: new Date('2026-01-10') },
+        { _id: '4', name: 'Office Pro Supplies', company: 'Office Pro Inc.', email: 'orders@officepro.com', phone: '+1 800 456 7890', address: '400 Business Ave', city: 'Atlanta', country: 'USA', contactPerson: 'Lisa Martinez', notes: 'Office equipment and ergonomic products.', status: 'Inactive', createdAt: new Date('2025-09-20') },
+        { _id: '5', name: 'Global Components', company: 'Global Tech Components', email: 'support@globalcomp.com', phone: '+1 800 567 8901', address: '500 Tech Park', city: 'Austin', country: 'USA', contactPerson: 'David Kim', notes: '', status: 'Active', createdAt: new Date('2026-02-28') },
       ]);
     } finally { setLoading(false); }
   };
@@ -49,7 +49,7 @@ export default function Suppliers() {
 
   const openCreate = () => {
     setEditing(null);
-    setForm({ name: '', company: '', email: '', phone: '', address: '', city: '', country: '', contactPerson: '', notes: '', status: 'active' });
+    setForm({ name: '', company: '', email: '', phone: '', address: '', city: '', country: '', contactPerson: '', notes: '', status: 'Active' });
     setShowModal(true);
   };
 
@@ -101,8 +101,8 @@ export default function Suppliers() {
       <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         {[
           { label: 'Total Suppliers', value: suppliers.length, icon: Truck, color: 'from-primary-500 to-indigo-600' },
-          { label: 'Active', value: suppliers.filter(s => s.status === 'active').length, icon: Star, color: 'from-emerald-500 to-teal-600' },
-          { label: 'Inactive', value: suppliers.filter(s => s.status === 'inactive').length, icon: Building2, color: 'from-slate-400 to-slate-600' },
+          { label: 'Active', value: suppliers.filter(s => s.status === 'Active').length, icon: Star, color: 'from-emerald-500 to-teal-600' },
+          { label: 'Inactive', value: suppliers.filter(s => s.status === 'Inactive').length, icon: Building2, color: 'from-slate-400 to-slate-600' },
         ].map((s, i) => (
           <motion.div key={s.label} whileHover={{ y: -3 }} className="card p-4 flex items-center gap-4">
             <motion.div animate={{ y: [0, -3, 0] }} transition={{ delay: i * 0.1, duration: 3, repeat: Infinity }} className={`p-3 rounded-xl bg-gradient-to-br ${s.color} text-white shadow-lg`}>
@@ -145,8 +145,8 @@ export default function Suppliers() {
                   <div>
                     <h3 className="font-bold text-slate-800 text-lg leading-tight">{s.name}</h3>
                     {s.company && <p className="text-sm text-slate-500">{s.company}</p>}
-                    <span className={`badge ${s.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'} capitalize mt-2`}>
-                      {s.status ? s.status.charAt(0).toUpperCase() + s.status.slice(1) : "Active"}
+                    <span className={`badge ${s.status === 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'} capitalize mt-2`}>
+                      {s.status || "Active"}
                     </span>
                   </div>
                 </div>

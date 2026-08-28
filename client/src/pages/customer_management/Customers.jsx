@@ -17,7 +17,7 @@ export default function Customers() {
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
-  const [form, setForm] = useState({ name: '', email: '', phone: '', address: '', city: '', country: '', notes: '', status: 'active' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', address: '', city: '', country: '', notes: '', status: 'Active' });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => { loadData(); }, []);
@@ -28,12 +28,12 @@ export default function Customers() {
       setCustomers(res.data.customers || []);
     } catch (err) {
       setCustomers([
-        { _id: '1', name: 'Alice Johnson', email: 'alice@example.com', phone: '+1 555 123 4567', address: '123 Main St', city: 'New York', country: 'USA', totalPurchases: 12500, status: 'active', createdAt: new Date('2026-01-15'), lastPurchase: new Date('2026-08-10') },
-        { _id: '2', name: 'Bob Smith', email: 'bob@example.com', phone: '+1 555 234 5678', address: '456 Oak Ave', city: 'Los Angeles', country: 'USA', totalPurchases: 8200, status: 'active', createdAt: new Date('2026-02-20'), lastPurchase: new Date('2026-08-05') },
-        { _id: '3', name: 'Carol Davis', email: 'carol@example.com', phone: '+1 555 345 6789', address: '789 Pine Rd', city: 'Chicago', country: 'USA', totalPurchases: 15800, status: 'active', createdAt: new Date('2026-01-05'), lastPurchase: new Date('2026-08-13') },
-        { _id: '4', name: 'David Wilson', email: 'david@example.com', phone: '+1 555 456 7890', address: '321 Elm St', city: 'Houston', country: 'USA', totalPurchases: 3400, status: 'inactive', createdAt: new Date('2026-03-10'), lastPurchase: new Date('2026-05-20') },
-        { _id: '5', name: 'Emma Brown', email: 'emma@example.com', phone: '+1 555 567 8901', address: '654 Cedar Ln', city: 'Phoenix', country: 'USA', totalPurchases: 9700, status: 'active', createdAt: new Date('2026-02-01'), lastPurchase: new Date('2026-08-11') },
-        { _id: '6', name: 'Frank Miller', email: 'frank@example.com', phone: '+1 555 678 9012', address: '987 Maple Dr', city: 'Dallas', country: 'USA', totalPurchases: 5600, status: 'active', createdAt: new Date('2026-04-01'), lastPurchase: new Date('2026-07-25') },
+        { _id: '1', name: 'Alice Johnson', email: 'alice@example.com', phone: '+1 555 123 4567', address: '123 Main St', city: 'New York', country: 'USA', totalPurchases: 12500, status: 'Active', createdAt: new Date('2026-01-15'), lastPurchase: new Date('2026-08-10') },
+        { _id: '2', name: 'Bob Smith', email: 'bob@example.com', phone: '+1 555 234 5678', address: '456 Oak Ave', city: 'Los Angeles', country: 'USA', totalPurchases: 8200, status: 'Active', createdAt: new Date('2026-02-20'), lastPurchase: new Date('2026-08-05') },
+        { _id: '3', name: 'Carol Davis', email: 'carol@example.com', phone: '+1 555 345 6789', address: '789 Pine Rd', city: 'Chicago', country: 'USA', totalPurchases: 15800, status: 'Active', createdAt: new Date('2026-01-05'), lastPurchase: new Date('2026-08-13') },
+        { _id: '4', name: 'David Wilson', email: 'david@example.com', phone: '+1 555 456 7890', address: '321 Elm St', city: 'Houston', country: 'USA', totalPurchases: 3400, status: 'Inactive', createdAt: new Date('2026-03-10'), lastPurchase: new Date('2026-05-20') },
+        { _id: '5', name: 'Emma Brown', email: 'emma@example.com', phone: '+1 555 567 8901', address: '654 Cedar Ln', city: 'Phoenix', country: 'USA', totalPurchases: 9700, status: 'Active', createdAt: new Date('2026-02-01'), lastPurchase: new Date('2026-08-11') },
+        { _id: '6', name: 'Frank Miller', email: 'frank@example.com', phone: '+1 555 678 9012', address: '987 Maple Dr', city: 'Dallas', country: 'USA', totalPurchases: 5600, status: 'Active', createdAt: new Date('2026-04-01'), lastPurchase: new Date('2026-07-25') },
       ]);
     } finally { setLoading(false); }
   };
@@ -46,7 +46,7 @@ export default function Customers() {
 
   const openCreate = () => {
     setEditing(null);
-    setForm({ name: '', email: '', phone: '', address: '', city: '', country: '', notes: '', status: 'active' });
+    setForm({ name: '', email: '', phone: '', address: '', city: '', country: '', notes: '', status: 'Active' });
     setShowModal(true);
   };
 
@@ -98,7 +98,7 @@ export default function Customers() {
       <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
         {[
           { label: 'Total Customers', value: customers.length, icon: Users, color: 'from-primary-500 to-indigo-600' },
-          { label: 'Active', value: customers.filter(c => c.status === 'active').length, icon: Users, color: 'from-emerald-500 to-teal-600' },
+          { label: 'Active', value: customers.filter(c => c.status === 'Active').length, icon: Users, color: 'from-emerald-500 to-teal-600' },
           { label: 'Total Revenue', value: `$${customers.reduce((s, c) => s + (c.totalPurchases || 0), 0).toLocaleString()}`, icon: ShoppingBag, color: 'from-amber-500 to-orange-600' },
           { label: 'Avg Lifetime Value', value: `$${Math.round(customers.reduce((s, c) => s + (c.totalPurchases || 0), 0) / (customers.length || 1)).toLocaleString()}`, icon: Calendar, color: 'from-purple-500 to-violet-600' },
         ].map((s, i) => (
@@ -143,8 +143,8 @@ export default function Customers() {
                   </motion.div>
                   <div>
                     <h3 className="font-bold text-slate-800 text-lg">{c.name}</h3>
-                    <span className={`badge ${c.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'} capitalize mt-1`}>
-                      {c.status ? c.status.charAt(0).toUpperCase() + c.status.slice(1) : "Active"}
+                    <span className={`badge ${c.status === 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'} capitalize mt-1`}>
+                      {c.status || "Active"}
                     </span>
                   </div>
                 </div>
@@ -221,8 +221,8 @@ export default function Customers() {
                   <div className="sm:col-span-2"><label className="label">Notes</label><textarea rows={2} className="input resize-none" value={form.notes || ''} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></div>
                   <div><label className="label">Status</label>
                     <select className="input" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
-                      <option value="active">Active</option>
-                      <option value="inactive">Inactive</option>
+                      <option value="Active">Active</option>
+                      <option value="Inactive">Inactive</option>
                     </select>
                   </div>
                 </div>

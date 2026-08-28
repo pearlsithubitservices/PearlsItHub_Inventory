@@ -80,7 +80,7 @@ export default function AddVendor({ onBack, onSave }) {
         creditDays: form.creditDays,
         exchangeRate: form.exchangeRate,
         bankDetails: bankDetails,
-        status: form.status === "Active" ? "active" : "inactive",
+        status: form.status,
       };
 
       const res = await fetch(`${API_URL}/suppliers`, {

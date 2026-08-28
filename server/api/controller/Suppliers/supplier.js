@@ -34,8 +34,8 @@ const getSuppliers = async (req, res) => {
       .limit(limitNum);
 
     const totalVendors = await Supplier.countDocuments();
-    const activeVendors = await Supplier.countDocuments({ status: 'active' });
-    const inactiveVendors = await Supplier.countDocuments({ status: 'inactive' });
+    const activeVendors = await Supplier.countDocuments({ status: 'Active' });
+    const inactiveVendors = await Supplier.countDocuments({ status: 'Inactive' });
     const totalPayable = await Supplier.aggregate([
       { $group: { _id: null, total: { $sum: '$payable' } } }
     ]);
