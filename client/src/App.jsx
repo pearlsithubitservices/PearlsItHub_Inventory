@@ -10,6 +10,7 @@ import Suppliers from './pages/vendor_management/Suppliers';
 import Customers from './pages/customer_management/Customers';
 import Orders from './pages/order_management/Orders';
 import ProductHistory from './pages/product_management/ProductHistory';
+import Warranty from './pages/product_management/Warranty';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import Dashboard from './pages/Dashboard';
@@ -62,7 +63,7 @@ export default function App() {
           <Route path="add-order" element={<AddOrder />} />
           <Route path="vendors" element={<Vendors />} />
           <Route path="inventory-maintenance" element={<Placeholder title="Inventory Maintenance" description="Stock counts, cycle counts, and inventory adjustments." icon={FileQuestion} />} />
-          <Route path="warranty" element={<Placeholder title="Warranty Tracking" description="Track product warranties, claims, and service contracts." icon={FileQuestion} />} />
+          <Route path="warranty" element={<Warranty />} />
           <Route path="audit" element={<Placeholder title="Inventory Audit" description="Comprehensive audit trails and reconciliation reports." icon={FileQuestion} />} />
           <Route path="reports" element={<Placeholder title="Reports & Analytics" description="Advanced reporting, business intelligence, and custom dashboards." icon={FileQuestion} />} />
           <Route path="notifications" element={<Placeholder title="Notifications & Alerts" description="Low stock alerts, expirations, and system notifications." icon={FileQuestion} />} />
