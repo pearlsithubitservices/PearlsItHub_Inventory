@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Search, ChevronDown, Eye, Calendar,
   Package, TrendingUp, TrendingDown, ArrowUpDown,
   FileSpreadsheet, FileDown, RotateCcw,
-  ChevronLeft, ChevronRight, Clock
+  ChevronLeft, ChevronRight, Plus, ArrowRight
 } from 'lucide-react';
 import ProductMovementDetail from '../../components/product_management/ProductMovementDetail';
 
@@ -94,7 +95,9 @@ const movementTypeBadge = (type) => {
     'Stock Out': 'bg-red-100 text-red-600 border border-red-200',
     'Transfer': 'bg-purple-100 text-purple-700 border border-purple-200',
     'Adjustment': 'bg-orange-100 text-orange-600 border border-orange-200',
+    'Physical Audit': 'bg-amber-100 text-amber-700 border border-amber-200',
     'Return In': 'bg-blue-100 text-blue-700 border border-blue-200',
+    'Supplier Return': 'bg-cyan-100 text-cyan-700 border border-cyan-200',
   };
   return styles[type] || 'bg-slate-100 text-slate-600 border border-slate-200';
 };
@@ -108,9 +111,65 @@ const movementData = [
   { id: 6, date: '07-06-2026 09:45 AM', productName: 'Seth Lakha 16 kg', sku: 'DL - 00 168', movementType: 'Stock In', referenceId: 'TRF-90350', quantity: 50, balanceStock: 248, user: 'Admin User', status: 'Completed', category: 'Electronics', unit: 'Nos', warehouse: 'Main Warehouse', location: 'Rack A, Shelf 1', bin: 'BIN-A1-05', previousStock: 198, newStock: 248, returns: 'Purchase from supplier', documentType: 'Purchase Order', supplierName: 'Global Traders', grnNo: 'GRN-2026-120', invoiceNo: 'INV-2026-170', documentDate: '06-07-2026', totalAmount: 300000, unitCost: 60000, discount: 0, tax: 54000, netAmount: 354000 },
   { id: 7, date: '07-08-2026 01:15 PM', productName: 'Seth Lakha 16 kg', sku: 'DL - 00 168', movementType: 'Stock Out', referenceId: 'TRF-90351', quantity: -25, balanceStock: 223, user: 'Admin User', status: 'Completed', category: 'Electronics', unit: 'Nos', warehouse: 'Pune-WH', location: 'Rack D, Shelf 1', bin: 'BIN-D1-08', previousStock: 248, newStock: 223, returns: 'Customer Dispatch', documentType: 'Sales Order', supplierName: '-', grnNo: '-', invoiceNo: 'INV-2026-175', documentDate: '08-07-2026', totalAmount: 150000, unitCost: 60000, discount: 0, tax: 27000, netAmount: 177000 },
   { id: 8, date: '07-09-2026 11:00 AM', productName: 'Seth Lakha 16 kg', sku: 'DL - 00 168', movementType: 'Stock In', referenceId: 'TRF-90352', quantity: 20, balanceStock: 243, user: 'Admin User', status: 'Pending', category: 'Electronics', unit: 'Nos', warehouse: 'Chennai-WH', location: 'Rack A, Shelf 3', bin: 'BIN-A3-15', previousStock: 223, newStock: 243, returns: 'Purchase from supplier', documentType: 'Purchase Order', supplierName: 'Regional Suppliers', grnNo: 'GRN-2026-125', invoiceNo: 'INV-2026-180', documentDate: '09-07-2026', totalAmount: 120000, unitCost: 60000, discount: 0, tax: 21600, netAmount: 141600 },
+  { id: 9, date: '07-10-2026 10:30 AM', productName: 'Seth Lakha 16 kg', sku: 'DL - 00 168', movementType: 'Return In', referenceId: 'RET-50001', quantity: 15, balanceStock: 258, user: 'Admin User', status: 'Completed', category: 'Electronics', unit: 'Nos', warehouse: 'Chennai-WH', location: 'Rack B, Shelf 2', bin: 'BIN-B2-33', previousStock: 243, newStock: 258, returns: 'Customer Return - Defective', documentType: 'Return Order', customerName: 'ABC pvt ltd', invoiceNo: 'INV-2026-165', documentDate: '10-07-2026', totalAmount: 90000, unitCost: 6000, discount: 0, tax: 16200, netAmount: 106200, returnReason: 'Defective Product', returnStatus: 'Approved' },
+  { id: 10, date: '07-11-2026 02:15 PM', productName: 'Seth Lakha 16 kg', sku: 'DL - 00 168', movementType: 'Supplier Return', referenceId: 'SRET-60001', quantity: -10, balanceStock: 248, user: 'Admin User', status: 'Completed', category: 'Electronics', unit: 'Nos', warehouse: 'Main Warehouse', location: 'Rack A, Shelf 1', bin: 'BIN-A1-05', previousStock: 258, newStock: 248, returns: 'Return to supplier - Damaged', documentType: 'Supplier Return', supplierName: 'Tech Supplies Inc.', invoiceNo: 'INV-2026-155', documentDate: '11-07-2026', totalAmount: 60000, unitCost: 6000, discount: 0, tax: 10800, netAmount: 70800, returnReason: 'Damaged Goods', returnStatus: 'Completed' },
+  { id: 11, date: '07-12-2026 09:00 AM', productName: 'Seth Lakha 16 kg', sku: 'DL - 00 168', movementType: 'Adjustment', referenceId: 'ADJ-70001', quantity: 5, balanceStock: 253, user: 'Admin User', status: 'Completed', category: 'Electronics', unit: 'Nos', warehouse: 'Chennai-WH', location: 'Rack A, Shelf 4', bin: 'BIN-A4-22', previousStock: 248, newStock: 253, returns: 'Manual count correction', documentType: 'Adjustment Note', adjustmentType: 'Manual', supplierName: '-', grnNo: '-', invoiceNo: '-', documentDate: '12-07-2026', totalAmount: 30000, unitCost: 6000, discount: 0, tax: 5400, netAmount: 35400 },
+  { id: 12, date: '07-13-2026 03:45 PM', productName: 'Seth Lakha 16 kg', sku: 'DL - 00 168', movementType: 'Physical Audit', referenceId: 'AUD-80001', quantity: -3, balanceStock: 250, user: 'Admin User', status: 'Completed', category: 'Electronics', unit: 'Nos', warehouse: 'Mumbai-WH', location: 'Rack C, Shelf 3', bin: 'BIN-C3-12', previousStock: 253, newStock: 250, returns: 'Physical count mismatch', documentType: 'Audit Report', adjustmentType: 'Physical', supplierName: '-', grnNo: '-', invoiceNo: '-', documentDate: '13-07-2026', totalAmount: 18000, unitCost: 6000, discount: 0, tax: 3240, netAmount: 21240 },
+  { id: 13, date: '07-14-2026 11:20 AM', productName: 'Seth Lakha 16 kg', sku: 'DL - 00 168', movementType: 'Return In', referenceId: 'RET-50002', quantity: 8, balanceStock: 258, user: 'Admin User', status: 'Pending', category: 'Electronics', unit: 'Nos', warehouse: 'Pune-WH', location: 'Rack D, Shelf 1', bin: 'BIN-D1-08', previousStock: 250, newStock: 258, returns: 'Customer Return - Wrong item', documentType: 'Return Order', customerName: 'XYZ Enterprises', invoiceNo: 'INV-2026-180', documentDate: '14-07-2026', totalAmount: 48000, unitCost: 6000, discount: 0, tax: 8640, netAmount: 56640, returnReason: 'Wrong Item Delivered', returnStatus: 'Pending' },
 ];
 
+const tabs = [
+  { id: 'all', label: 'All Movements' },
+  { id: 'Stock In', label: 'Stock In' },
+  { id: 'Stock Out', label: 'Stock Out' },
+  { id: 'Transfer', label: 'Stock Transfer' },
+  { id: 'Returns', label: 'Returns' },
+  { id: 'Adjustments', label: 'Adjustments' },
+];
+
+const subTabs = {
+  Returns: [
+    { id: 'all', label: 'All Returns' },
+    { id: 'Return In', label: 'Customer Returns' },
+    { id: 'Supplier Return', label: 'Supplier Returns' },
+  ],
+  Adjustments: [
+    { id: 'all', label: 'All Adjustments' },
+    { id: 'Adjustment', label: 'Manual Adjustment' },
+    { id: 'Physical Audit', label: 'Physical Audit' },
+  ],
+};
+
+const addRoutes = {
+  'all': null,
+  'Stock In': '/stock-in/new',
+  'Stock Out': '/stock-out/new',
+  'Transfer': '/stock-transfer/new',
+  'Return In': '/customer-return/new',
+  'Supplier Return': '/supplier-return/new',
+  'Adjustment': '/manual-adjustment/new',
+  'Physical Audit': '/physical-audit/new',
+};
+
+const addLabels = {
+  'all': null,
+  'Stock In': 'Add Stock In',
+  'Stock Out': 'Add Stock Out',
+  'Transfer': 'Add Transfer',
+  'Return In': 'Add Customer Return',
+  'Supplier Return': 'Add Supplier Return',
+  'Adjustment': 'Add Manual Adjustment',
+  'Physical Audit': 'Add Physical Audit',
+};
+
+const movementTypeFilter = {
+  Returns: ['Return In', 'Supplier Return'],
+  Adjustments: ['Adjustment', 'Physical Audit'],
+};
+
 export default function ProductHistory() {
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [dateFrom, setDateFrom] = useState('');
@@ -121,6 +180,18 @@ export default function ProductHistory() {
   const [referenceNumber, setReferenceNumber] = useState('');
   const [view, setView] = useState('list');
   const [selectedMovement, setSelectedMovement] = useState(null);
+
+  const tabParam = searchParams.get('tab') || 'all';
+  const tabMap = {
+    'all': 'all',
+    'stock-in': 'Stock In',
+    'stock-out': 'Stock Out',
+    'transfer': 'Transfer',
+    'returns': 'Returns',
+    'adjustments': 'Adjustments',
+  };
+  const activeTab = tabMap[tabParam] || 'all';
+  const [activeSubTab, setActiveSubTab] = useState('all');
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 300);
@@ -133,9 +204,25 @@ export default function ProductHistory() {
     </div>
   );
 
-  const totalPages = Math.ceil(movementData.length / ITEMS_PER_PAGE);
+  const filteredByType = (() => {
+    if (activeTab === 'all') return movementData;
+    if (activeSubTab !== 'all') return movementData.filter(m => m.movementType === activeSubTab);
+    if (movementTypeFilter[activeTab]) return movementData.filter(m => movementTypeFilter[activeTab].includes(m.movementType));
+    return movementData.filter(m => m.movementType === activeTab);
+  })();
+
+  const filtered = filteredByType.filter(m => {
+    if (dateFrom && m.date < dateFrom) return false;
+    if (dateTo && m.date > dateTo) return false;
+    if (product && !m.productName.toLowerCase().includes(product.toLowerCase())) return false;
+    if (sku && !m.sku.toLowerCase().includes(sku.toLowerCase())) return false;
+    if (referenceNumber && !m.referenceId.toLowerCase().includes(referenceNumber.toLowerCase())) return false;
+    return true;
+  });
+
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentData = movementData.slice(startIdx, startIdx + ITEMS_PER_PAGE);
+  const currentData = filtered.slice(startIdx, startIdx + ITEMS_PER_PAGE);
 
   const resetFilters = () => {
     setDateFrom('');
@@ -145,6 +232,51 @@ export default function ProductHistory() {
     setMovementType('All Types');
     setReferenceNumber('');
     setCurrentPage(1);
+  };
+
+  const getTabStats = (tab, subTab) => {
+    let data;
+    if (tab === 'all') {
+      data = movementData;
+    } else if (subTab !== 'all') {
+      data = movementData.filter(m => m.movementType === subTab);
+    } else if (movementTypeFilter[tab]) {
+      data = movementData.filter(m => movementTypeFilter[tab].includes(m.movementType));
+    } else {
+      data = movementData.filter(m => m.movementType === tab);
+    }
+    const totalIn = data.filter(m => m.movementType === 'Stock In').reduce((s, m) => s + m.quantity, 0);
+    const totalOut = data.filter(m => m.movementType === 'Stock Out').reduce((s, m) => s + Math.abs(m.quantity), 0);
+    const totalTransfer = data.filter(m => m.movementType === 'Transfer').reduce((s, m) => s + m.quantity, 0);
+    const totalReturn = data.filter(m => ['Return In', 'Supplier Return'].includes(m.movementType)).reduce((s, m) => s + Math.abs(m.quantity), 0);
+    const totalAdjust = data.filter(m => ['Adjustment', 'Physical Audit'].includes(m.movementType)).reduce((s, m) => s + Math.abs(m.quantity), 0);
+    return { totalIn, totalOut, totalTransfer, totalReturn, totalAdjust, total: data.length };
+  };
+
+  const stats = getTabStats(activeTab, activeSubTab);
+
+  const handleTabChange = (tabId) => {
+    const reverseTabMap = {
+      'all': 'all',
+      'Stock In': 'stock-in',
+      'Stock Out': 'stock-out',
+      'Transfer': 'transfer',
+      'Returns': 'returns',
+      'Adjustments': 'adjustments',
+    };
+    setSearchParams({ tab: reverseTabMap[tabId] || 'all' });
+    setActiveSubTab('all');
+    setCurrentPage(1);
+  };
+
+  const handleSubTabChange = (subTabId) => {
+    setActiveSubTab(subTabId);
+    setCurrentPage(1);
+  };
+
+  const handleView = (row) => {
+    setSelectedMovement(row);
+    setView('detail');
   };
 
   if (view === 'detail' && selectedMovement) {
@@ -158,13 +290,14 @@ export default function ProductHistory() {
 
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="visible" className="max-w-[1400px] mx-auto space-y-4">
+      {/* Header */}
       <motion.div variants={itemVariants} className="flex items-center justify-between flex-wrap gap-3">
         <h1 className="text-[20px] font-bold text-slate-900">Movement History</h1>
         <div className="flex items-center gap-2">
           <button
             onClick={() => {
               const headers = ["#", "Date & Time", "Product Name", "SKU/Code", "Movement Type", "Reference ID", "Quantity", "Tax (Rs)", "Balance Stock", "User"];
-              const rows = movementData.map((row, i) => [
+              const rows = filtered.map((row, i) => [
                 i + 1, row.date, row.productName, row.sku, row.movementType, row.referenceId, row.quantity, row.tax || 0, row.balanceStock, row.user
               ]);
               const csv = [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
@@ -183,7 +316,7 @@ export default function ProductHistory() {
           <button
             onClick={() => {
               const printWindow = window.open("", "_blank");
-              const rows = movementData.map((row, i) => `
+              const rows = filtered.map((row, i) => `
                 <tr>
                   <td>${i + 1}</td><td>${row.date}</td><td>${row.productName}</td>
                   <td>${row.sku}</td><td>${row.movementType}</td><td>${row.referenceId}</td>
@@ -204,13 +337,75 @@ export default function ProductHistory() {
         </div>
       </motion.div>
 
+      {/* Sub-Tabs */}
+      {subTabs[activeTab] && (
+        <motion.div variants={itemVariants} className="bg-white rounded-lg border border-slate-200/80 shadow-sm p-1">
+          <div className="flex items-center gap-1">
+            {subTabs[activeTab].map((sub) => (
+              <button
+                key={sub.id}
+                onClick={() => handleSubTabChange(sub.id)}
+                className={`flex-1 px-4 py-2 rounded-md text-[12px] font-semibold transition-all ${
+                  activeSubTab === sub.id
+                    ? 'bg-[#1e5fa5]/10 text-[#1e5fa5] border border-[#1e5fa5]/20'
+                    : 'text-slate-500 hover:bg-slate-100 border border-transparent'
+                }`}
+              >
+                {sub.label}
+              </button>
+            ))}
+          </div>
+        </motion.div>
+      )}
+
+      {/* Stat Cards */}
       <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={Package} label="Total Received" value="1,200 Units" tint="bg-blue-50 text-blue-600" delay={0} />
-        <StatCard icon={TrendingDown} label="Total Returns" value="150 Units" tint="bg-red-50 text-red-600" delay={0.05} />
-        <StatCard icon={ArrowUpDown} label="Total Adjustment" value="80 Units" tint="bg-emerald-50 text-emerald-600" delay={0.1} />
-        <StatCard icon={TrendingUp} label="Total Transfers" value="320 Units" tint="bg-purple-50 text-purple-600" delay={0.15} />
+        {activeTab === 'all' ? (
+          <>
+            <StatCard icon={Package} label="Total Movements" value={stats.total} tint="bg-blue-50 text-blue-600" delay={0} />
+            <StatCard icon={TrendingUp} label="Total Stock In" value={`${stats.totalIn} Units`} tint="bg-emerald-50 text-emerald-600" delay={0.05} />
+            <StatCard icon={TrendingDown} label="Total Stock Out" value={`${stats.totalOut} Units`} tint="bg-red-50 text-red-600" delay={0.1} />
+            <StatCard icon={ArrowUpDown} label="Total Transfers" value={`${stats.totalTransfer} Units`} tint="bg-purple-50 text-purple-600" delay={0.15} />
+          </>
+        ) : activeTab === 'Stock In' ? (
+          <>
+            <StatCard icon={Package} label="Total Stock In" value={`${stats.totalIn} Units`} tint="bg-emerald-50 text-emerald-600" delay={0} />
+            <StatCard icon={TrendingUp} label="Total Entries" value={movementData.filter(m => m.movementType === 'Stock In').length} tint="bg-blue-50 text-blue-600" delay={0.05} />
+            <StatCard icon={Package} label="Pending" value={movementData.filter(m => m.movementType === 'Stock In' && m.status === 'Pending').length} tint="bg-amber-50 text-amber-600" delay={0.1} />
+            <StatCard icon={Package} label="Completed" value={movementData.filter(m => m.movementType === 'Stock In' && m.status === 'Completed').length} tint="bg-green-50 text-green-600" delay={0.15} />
+          </>
+        ) : activeTab === 'Stock Out' ? (
+          <>
+            <StatCard icon={TrendingDown} label="Total Stock Out" value={`${stats.totalOut} Units`} tint="bg-red-50 text-red-600" delay={0} />
+            <StatCard icon={Package} label="Total Entries" value={movementData.filter(m => m.movementType === 'Stock Out').length} tint="bg-blue-50 text-blue-600" delay={0.05} />
+            <StatCard icon={Package} label="Pending" value={movementData.filter(m => m.movementType === 'Stock Out' && m.status === 'Pending').length} tint="bg-amber-50 text-amber-600" delay={0.1} />
+            <StatCard icon={Package} label="Completed" value={movementData.filter(m => m.movementType === 'Stock Out' && m.status === 'Completed').length} tint="bg-green-50 text-green-600" delay={0.15} />
+          </>
+        ) : activeTab === 'Returns' ? (
+          <>
+            <StatCard icon={Package} label="Total Returns" value={`${stats.totalReturn} Units`} tint="bg-blue-50 text-blue-600" delay={0} />
+            <StatCard icon={TrendingUp} label="Customer Returns" value={movementData.filter(m => m.movementType === 'Return In').length} tint="bg-emerald-50 text-emerald-600" delay={0.05} />
+            <StatCard icon={TrendingDown} label="Supplier Returns" value={movementData.filter(m => m.movementType === 'Supplier Return').length} tint="bg-cyan-50 text-cyan-600" delay={0.1} />
+            <StatCard icon={Package} label="Pending" value={movementData.filter(m => ['Return In', 'Supplier Return'].includes(m.movementType) && m.status === 'Pending').length} tint="bg-amber-50 text-amber-600" delay={0.15} />
+          </>
+        ) : activeTab === 'Adjustments' ? (
+          <>
+            <StatCard icon={ArrowUpDown} label="Total Adjustments" value={`${stats.totalAdjust} Units`} tint="bg-orange-50 text-orange-600" delay={0} />
+            <StatCard icon={Package} label="Manual Adjustments" value={movementData.filter(m => m.movementType === 'Adjustment').length} tint="bg-blue-50 text-blue-600" delay={0.05} />
+            <StatCard icon={Package} label="Physical Audits" value={movementData.filter(m => m.movementType === 'Physical Audit').length} tint="bg-amber-50 text-amber-600" delay={0.1} />
+            <StatCard icon={Package} label="Completed" value={movementData.filter(m => ['Adjustment', 'Physical Audit'].includes(m.movementType) && m.status === 'Completed').length} tint="bg-green-50 text-green-600" delay={0.15} />
+          </>
+        ) : (
+          <>
+            <StatCard icon={ArrowUpDown} label="Total Transfers" value={`${stats.totalTransfer} Units`} tint="bg-purple-50 text-purple-600" delay={0} />
+            <StatCard icon={Package} label="Total Entries" value={movementData.filter(m => m.movementType === 'Transfer').length} tint="bg-blue-50 text-blue-600" delay={0.05} />
+            <StatCard icon={Package} label="Pending" value={movementData.filter(m => m.movementType === 'Transfer' && m.status === 'Pending').length} tint="bg-amber-50 text-amber-600" delay={0.1} />
+            <StatCard icon={Package} label="Completed" value={movementData.filter(m => m.movementType === 'Transfer' && m.status === 'Completed').length} tint="bg-green-50 text-green-600" delay={0.15} />
+          </>
+        )}
       </motion.div>
 
+      {/* Filters */}
       <motion.div variants={itemVariants} className="bg-white rounded-lg border border-slate-200/80 shadow-sm p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3 mb-3">
           <Field label="Date From">
@@ -288,9 +483,30 @@ export default function ProductHistory() {
         </div>
       </motion.div>
 
+      {/* Table */}
       <motion.div variants={itemVariants} className="bg-white rounded-lg border border-slate-200/80 shadow-sm overflow-hidden">
-        <div className="px-4 py-3 border-b border-slate-200">
-          <h3 className="text-lg font-extrabold text-slate-900 tracking-tight">Movements History list</h3>
+        <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+          <h3 className="text-lg font-extrabold text-slate-900 tracking-tight">
+            {activeSubTab !== 'all' && subTabs[activeTab]
+              ? subTabs[activeTab].find(s => s.id === activeSubTab)?.label || 'Movements'
+              : tabs.find(t => t.id === activeTab)?.label || 'Movements'} list
+          </h3>
+          {(() => {
+            const route = activeSubTab !== 'all' ? addRoutes[activeSubTab] : addRoutes[activeTab];
+            const label = activeSubTab !== 'all' ? addLabels[activeSubTab] : addLabels[activeTab];
+            if (!route) return null;
+            return (
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => navigate(route)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-semibold shadow-md hover:opacity-95 transition-all"
+                style={{ background: `linear-gradient(135deg, ${ACCENT_2} 0%, ${ACCENT} 100%)` }}
+              >
+                <Plus size={15} /> {label}
+              </motion.button>
+            );
+          })()}
         </div>
         <div className="overflow-x-auto px-2 pb-2 pt-1">
           <table className="w-full min-w-[1200px]">
@@ -330,7 +546,7 @@ export default function ProductHistory() {
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
-                      onClick={() => { setSelectedMovement(row); setView('detail'); }}
+                      onClick={() => handleView(row)}
                       className="w-6 h-6 rounded bg-blue-50 text-blue-500 border border-blue-200 flex items-center justify-center hover:bg-blue-100 transition-all"
                       title="View"
                     >
@@ -349,7 +565,11 @@ export default function ProductHistory() {
             </tbody>
           </table>
         </div>
-        <div className="px-4 pt-2 pb-4 flex items-center justify-end">
+        {/* Pagination */}
+        <div className="px-4 pt-2 pb-4 flex items-center justify-between">
+          <p className="text-xs text-slate-500 font-semibold">
+            Showing {startIdx + 1}–{Math.min(startIdx + ITEMS_PER_PAGE, filtered.length)} of {filtered.length}
+          </p>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}

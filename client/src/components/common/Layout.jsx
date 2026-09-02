@@ -20,6 +20,7 @@ import {
   Menu,
   X,
   ChevronLeft,
+  ChevronDown,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
@@ -93,6 +94,14 @@ const navItems = [
         path: "/product-history",
         icon: History,
         label: "Product Movement History",
+        children: [
+          { path: "/product-history?tab=all", label: "All Movements" },
+          { path: "/product-history?tab=stock-in", label: "Stock In" },
+          { path: "/product-history?tab=stock-out", label: "Stock Out" },
+          { path: "/product-history?tab=transfer", label: "Stock Transfer" },
+          { path: "/product-history?tab=returns", label: "Returns" },
+          { path: "/product-history?tab=adjustments", label: "Adjustments" },
+        ],
       },
       {
         path: "/purchase-orders",
@@ -118,12 +127,17 @@ function LayoutContent() {
   const { logout } = useAuth();
   const location = useLocation();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [expandedItems, setExpandedItems] = useState({ "/product-history": true });
 
   const meta = pageMeta[location.pathname] || {
     title:
       navItems[0].items.find((i) => i.path === location.pathname)?.label ||
       "Inventory System",
     subtitle: "Manage your inventory operations efficiently.",
+  };
+
+  const toggleExpand = (path) => {
+    setExpandedItems((prev) => ({ ...prev, [path]: !prev[path] }));
   };
 
   const pageVariants = {
@@ -204,6 +218,11 @@ function LayoutContent() {
                 {group.items.map((item, index) => {
                   const Icon = item.icon;
                   const active = isActive(item.path);
+                  const hasChildren = item.children && item.children.length > 0;
+                  const isExpanded = expandedItems[item.path];
+                  const isChildActive = hasChildren && item.children.some(
+                    (child) => location.pathname + location.search === child.path
+                  );
                   return (
                     <motion.div
                       key={item.path}
@@ -211,39 +230,99 @@ function LayoutContent() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.03, duration: 0.3 }}
                     >
-                      <Link
-                        to={item.path}
-                        title={sidebarCollapsed ? item.label : ""}
-                      >
-                        <motion.div
-                          whileHover={{ x: sidebarCollapsed ? 0 : 4 }}
-                          whileTap={{ scale: 0.98 }}
-                          className={`flex items-center ${sidebarCollapsed ? "justify-center" : "px-3"} py-2 rounded-lg cursor-pointer transition-all duration-200 ${
-                            active
-                              ? "bg-[#1e5fa5]/70 text-white shadow-lg shadow-black/10 border border-white/10"
-                              : "text-slate-300 hover:text-white hover:bg-white/5 border border-transparent"
-                          }`}
-                        >
-                          <div
-                            className={`transition-transform ${active ? "text-white" : "text-slate-400 group-hover:text-white"}`}
+                      {hasChildren ? (
+                        <div>
+                          <motion.div
+                            whileHover={{ x: sidebarCollapsed ? 0 : 4 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => !sidebarCollapsed && toggleExpand(item.path)}
+                            className={`flex items-center ${sidebarCollapsed ? "justify-center" : "px-3"} py-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                              active || isChildActive
+                                ? "bg-[#1e5fa5]/70 text-white shadow-lg shadow-black/10 border border-white/10"
+                                : "text-slate-300 hover:text-white hover:bg-white/5 border border-transparent"
+                            }`}
                           >
-                            <Icon size={16} />
-                          </div>
-                          <AnimatePresence>
+                            <div className={`transition-transform ${active || isChildActive ? "text-white" : "text-slate-400 group-hover:text-white"}`}>
+                              <Icon size={16} />
+                            </div>
                             {!sidebarCollapsed && (
-                              <motion.span
-                                initial={{ opacity: 0, width: 0 }}
-                                animate={{ opacity: 1, width: "auto" }}
-                                exit={{ opacity: 0, width: 0 }}
+                              <>
+                                <span className="ml-2.5 font-medium text-[13px] flex-1 tracking-wide whitespace-nowrap">
+                                  {item.label}
+                                </span>
+                                <motion.div
+                                  animate={{ rotate: isExpanded ? 180 : 0 }}
+                                  transition={{ duration: 0.2 }}
+                                >
+                                  <ChevronDown size={14} className="text-slate-400" />
+                                </motion.div>
+                              </>
+                            )}
+                          </motion.div>
+                          <AnimatePresence>
+                            {isExpanded && !sidebarCollapsed && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
                                 transition={{ duration: 0.2 }}
-                                className="ml-2.5 font-medium text-[13px] flex-1 tracking-wide overflow-hidden whitespace-nowrap"
+                                className="overflow-hidden"
                               >
-                                {item.label}
-                              </motion.span>
+                                <div className="pl-5 py-1 space-y-0.5">
+                                  {item.children.map((child) => {
+                                    const childActive = location.pathname + location.search === child.path;
+                                    return (
+                                      <Link key={child.path} to={child.path}>
+                                        <motion.div
+                                          whileHover={{ x: 3 }}
+                                          whileTap={{ scale: 0.98 }}
+                                          className={`flex items-center px-3 py-1.5 rounded-md text-[12px] font-medium transition-all duration-200 ${
+                                            childActive
+                                              ? "bg-white/15 text-white"
+                                              : "text-slate-400 hover:text-white hover:bg-white/5"
+                                          }`}
+                                        >
+                                          <div className={`w-1.5 h-1.5 rounded-full mr-2 ${childActive ? "bg-white" : "bg-slate-500"}`} />
+                                          {child.label}
+                                        </motion.div>
+                                      </Link>
+                                    );
+                                  })}
+                                </div>
+                              </motion.div>
                             )}
                           </AnimatePresence>
-                        </motion.div>
-                      </Link>
+                        </div>
+                      ) : (
+                        <Link to={item.path} title={sidebarCollapsed ? item.label : ""}>
+                          <motion.div
+                            whileHover={{ x: sidebarCollapsed ? 0 : 4 }}
+                            whileTap={{ scale: 0.98 }}
+                            className={`flex items-center ${sidebarCollapsed ? "justify-center" : "px-3"} py-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                              active
+                                ? "bg-[#1e5fa5]/70 text-white shadow-lg shadow-black/10 border border-white/10"
+                                : "text-slate-300 hover:text-white hover:bg-white/5 border border-transparent"
+                            }`}
+                          >
+                            <div className={`transition-transform ${active ? "text-white" : "text-slate-400 group-hover:text-white"}`}>
+                              <Icon size={16} />
+                            </div>
+                            <AnimatePresence>
+                              {!sidebarCollapsed && (
+                                <motion.span
+                                  initial={{ opacity: 0, width: 0 }}
+                                  animate={{ opacity: 1, width: "auto" }}
+                                  exit={{ opacity: 0, width: 0 }}
+                                  transition={{ duration: 0.2 }}
+                                  className="ml-2.5 font-medium text-[13px] flex-1 tracking-wide overflow-hidden whitespace-nowrap"
+                                >
+                                  {item.label}
+                                </motion.span>
+                              )}
+                            </AnimatePresence>
+                          </motion.div>
+                        </Link>
+                      )}
                     </motion.div>
                   );
                 })}

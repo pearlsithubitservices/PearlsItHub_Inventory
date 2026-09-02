@@ -10,6 +10,13 @@ import Suppliers from './pages/vendor_management/Suppliers';
 import Customers from './pages/customer_management/Customers';
 import Orders from './pages/order_management/Orders';
 import ProductHistory from './pages/product_management/ProductHistory';
+import StockInForm from './pages/product_management/StockInForm';
+import StockOutForm from './pages/product_management/StockOutForm';
+import StockTransferForm from './pages/product_management/StockTransferForm';
+import CustomerReturnForm from './pages/product_management/CustomerReturnForm';
+import SupplierReturnForm from './pages/product_management/SupplierReturnForm';
+import ManualAdjustmentForm from './pages/product_management/ManualAdjustmentForm';
+import PhysicalAuditForm from './pages/product_management/PhysicalAuditForm';
 import Warranty from './pages/product_management/Warranty';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
@@ -59,6 +66,14 @@ export default function App() {
           <Route path="products" element={<Products />} />
           <Route path="stock" element={<Stock />} />
           <Route path="product-history" element={<ProductHistory />} />
+          <Route path="product-history/:id" element={<ProductHistory />} />
+          <Route path="stock-in/new" element={<StockInForm />} />
+          <Route path="stock-out/new" element={<StockOutForm />} />
+          <Route path="stock-transfer/new" element={<StockTransferForm />} />
+          <Route path="customer-return/new" element={<CustomerReturnForm />} />
+          <Route path="supplier-return/new" element={<SupplierReturnForm />} />
+          <Route path="manual-adjustment/new" element={<ManualAdjustmentForm />} />
+          <Route path="physical-audit/new" element={<PhysicalAuditForm />} />
           <Route path="purchase-orders" element={<PurchaseOrders />} />
           <Route path="add-order" element={<AddOrder />} />
           <Route path="vendors" element={<Vendors />} />
