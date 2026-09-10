@@ -10,7 +10,11 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: ["Admin", "Manager", "Staff"],
-      default: "Staff",
+      default: "Admin",
+      set: (v) =>
+        typeof v === "string" && v.length > 0
+          ? v.charAt(0).toUpperCase() + v.slice(1).toLowerCase()
+          : v,
     },
     phone: { type: String },
     avatar: { type: String },

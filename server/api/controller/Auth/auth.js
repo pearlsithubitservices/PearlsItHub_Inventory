@@ -8,7 +8,11 @@ const register = async (req, res) => {
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' });
     }
-    const user = await User.create({ name, email, password, role, phone });
+    const normalizedRole =
+      typeof role === "string" && role.length > 0
+        ? role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()
+        : undefined;
+    const user = await User.create({ name, email, password, role: normalizedRole, phone });
     const token = user.getSignedJwtToken();
     res.status(201).json({
       success: true,

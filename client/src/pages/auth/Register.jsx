@@ -5,7 +5,7 @@ import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight, Sparkles } from 'luci
 import { useAuth } from '../../context/AuthContext';
 
 export default function Register() {
-  const [form, setForm] = useState({ name: '', email: '', password: '', phone: '', role: 'staff' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', phone: '', role: 'Staff' });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
