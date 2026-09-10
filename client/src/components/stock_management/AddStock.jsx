@@ -11,7 +11,7 @@ import {
 
 const ACCENT = "#1e5fa5";
 const ACCENT_2 = "#0a57c4";
-const API_URL = "http://localhost:5000/api";
+import { API_URL } from "../../api/config";
 
 const Field = ({ label, required, children }) => (
   <div>

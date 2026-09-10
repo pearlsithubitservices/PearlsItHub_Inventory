@@ -17,7 +17,7 @@ import {
 import PurchaseOrderDetail from "../../components/purchase_management/PurchaseOrderDetail";
 import EditPurchaseOrder from "../../components/purchase_management/EditPurchaseOrder";
 
-const API_URL = "http://localhost:5000/api";
+import { API_URL } from "../../api/config";
 const ITEMS_PER_PAGE = 10;
 
 const StatCard = ({

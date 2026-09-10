@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ArrowLeft, Save } from "lucide-react";
 import { SingleImageUpload, GalleryImageUpload } from "../common/ImageUploader";
+import { API_URL } from "../../api/config";
 
 const ACCENT = "#1e5fa5";
 const ACCENT_2 = "#0a57c4";
@@ -180,7 +181,7 @@ export default function EditProductView({ product, onBack }) {
 
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `http://localhost:5000/api/products/${product._id}`,
+        `${API_URL}/products/${product._id}`,
         {
           method: "PUT",
           headers: {

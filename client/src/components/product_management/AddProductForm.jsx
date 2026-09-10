@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Save, ArrowLeft } from "lucide-react";
 import { SingleImageUpload, GalleryImageUpload } from "../common/ImageUploader";
+import { API_URL } from "../../api/config";
 
 const ACCENT = "#1e5fa5";
 const ACCENT_2 = "#0a57c4";
@@ -162,7 +163,7 @@ export default function AddProductForm({ onBack, onProductAdded }) {
       };
 
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/api/products", {
+      const res = await fetch(`${API_URL}/products`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

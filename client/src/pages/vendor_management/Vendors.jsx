@@ -17,7 +17,7 @@ import AddVendor from "../../components/vendor_management/AddVendor";
 import VendorDetail from "../../components/vendor_management/VendorDetail";
 import EditVendor from "../../components/vendor_management/EditVendor";
 
-const API_URL = "http://localhost:5000/api";
+import { API_URL } from "../../api/config";
 const ITEMS_PER_PAGE = 10;
 
 const StatCard = ({ icon: Icon, label, value, iconBg, iconColor, delay = 0 }) => (

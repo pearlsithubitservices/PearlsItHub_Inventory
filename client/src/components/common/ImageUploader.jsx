@@ -1,7 +1,9 @@
 import { useState, useRef } from "react";
 import { Upload, X, Image as ImageIcon } from "lucide-react";
 
-const API_URL = "http://localhost:5000/api/upload";
+import { API_URL as API_BASE } from "../../api/config";
+
+const API_URL = `${API_BASE}/upload`;
 
 export function SingleImageUpload({ value, onChange, label = "Product Image" }) {
   const [uploading, setUploading] = useState(false);

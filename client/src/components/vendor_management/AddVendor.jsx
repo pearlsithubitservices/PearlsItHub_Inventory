@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ArrowLeft, Save, Plus, Trash } from "lucide-react";
 
-const API_URL = "http://localhost:5000/api";
+import { API_URL } from "../../api/config";
 
 export default function AddVendor({ onBack, onSave }) {
   const [loading, setLoading] = useState(false);

@@ -27,7 +27,9 @@ import EditProductView from "../../components/product_management/EditProductView
 const ACCENT = "#1e5fa5";
 const ACCENT_2 = "#0a57c4";
 const ITEMS_PER_PAGE = 10;
-const API_URL = "http://localhost:5000/api/products";
+import { API_URL as API_BASE } from "../../api/config";
+
+const API_URL = `${API_BASE}/products`;
 
 const Field = ({ label, required, children }) => (
   <div>

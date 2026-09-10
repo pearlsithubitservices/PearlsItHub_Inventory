@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { ArrowLeft, Package, Download } from "lucide-react";
 import { motion } from "framer-motion";
 
-const API_URL = "http://localhost:5000/api";
+import { API_URL } from "../../api/config";
 
 export default function ProductDetailView({ productId, onBack }) {
   const [product, setProduct] = useState(null);

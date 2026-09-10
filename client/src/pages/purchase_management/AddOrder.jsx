@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, Plus, Trash } from "lucide-react";
 
-const API_URL = "http://localhost:5000/api";
+import { API_URL } from "../../api/config";
 
 export default function AddOrder() {
   const navigate = useNavigate();

@@ -10,7 +10,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-const API_URL = "http://localhost:5000/api";
+import { API_URL } from "../../api/config";
 const ITEMS_PER_PAGE = 10;
 
 export default function VendorDetail({ vendor, onBack, onEdit, onDelete }) {
